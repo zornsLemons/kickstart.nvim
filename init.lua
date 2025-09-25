@@ -1,4 +1,4 @@
---[[
+--[[ini
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -282,6 +282,74 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+  -- Install Iron.nvim for REPl
+  {
+    'Vigemus/iron.nvim',
+    config = function()
+      require('iron.core').setup {
+        -- Your REPL definitions and other configurations
+        repl_definition = {
+          python = {
+            command = { 'ipython', '-i', '--no-autoindent', '--nosep' },
+            block_dividers = { '# %%', '#%%' },
+          },
+          sh = {
+            command = { 'zsh' },
+          },
+          -- Add more languages as needed
+        },
+      }
+    end,
+    -- Iron doesn't set keymaps by default anymore.
+    -- You can set them here or manually add keymaps to the functions in iron.core
+    opts = {
+      keymaps = {
+        {
+          '<leader>jl',
+          function()
+            require('iron.core').repl_send_line()
+          end,
+          mode = { 'n', 'v' },
+          desc = 'Send line/selection to Iron',
+        },
+        {
+          '<leader>jc',
+          function()
+            require('iron.core').repl_send_motion()
+          end,
+          mode = { 'n' },
+          desc = 'Send motion to Iron',
+        },
+        {
+          '<leader>jb',
+          function()
+            require('iron.core').repl_send_motion 'ih'
+          end,
+          mode = { 'n' },
+          desc = 'Send code cell to Iron',
+        },
+        -- send_file = '<space>sf',
+        -- send_line = '<space>sl',
+        -- send_until_cursor = '<space>su',
+        -- send_mark = '<space>sm',
+        -- mark_motion = '<space>mc',
+        -- mark_visual = '<space>mc',
+        -- remove_mark = '<space>md',
+        -- cr = '<space>s<cr>',
+        -- interrupt = '<space>s<space>',
+        -- exit = '<space>sq',
+        -- clear = '<space>cl',
+      },
+    },
+  },
+  -- Install jupytext for using jupyter notebooks in nvim.
+  -- TODO: Write some helpers fxns to have jupytext automatically spin up iron with the current conda env.
+  {
+    'GCBallesteros/jupytext.nvim',
+    config = true,
+    -- Depending on your nvim distro or config you may need to make the loading not lazy
+    -- lazy=false,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -671,9 +739,12 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        gopls = {},
+        pyright = {},
+        rust_analyzer = {},
+        jupytext = {},
+        ruff = {},
+        sqls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -722,6 +793,8 @@ require('lazy').setup({
         -- 'pylint',
         -- 'pylyzer',
         'python-lsp-server',
+        -- 'sql-language-server',
+        'ruff',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
